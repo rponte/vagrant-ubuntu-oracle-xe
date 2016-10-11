@@ -37,7 +37,7 @@ Vagrant.configure("2") do |config|
     sudo locale-gen pt_BR
     sudo locale-gen pt_BR.ISO-8859-1
     sudo update-locale LANG=pt_BR.ISO-8859-1 LC_MESSAGES=POSIX
-  SCRIPT
+SCRIPT
   config.vm.provision :shell, :inline => $locale_and_charset_conf
 
   config.vbguest.auto_update = true
