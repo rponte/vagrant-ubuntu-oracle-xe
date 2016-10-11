@@ -33,6 +33,23 @@ contributions.
 
         vagrant plugin install vagrant-vbguest
 
+* Install [[vagrant-proxyconf](https://github.com/tmatilai/vagrant-proxyconf)]:
+
+        vagrant plugin install vagrant-proxyconf
+
+* To configure all possible software on all Vagrant VMs, add the following to `$HOME/.vagrant.d/Vagrantfile` (or to a project specific `Vagrantfile`):
+
+```ruby
+Vagrant.configure("2") do |config|
+  if Vagrant.has_plugin?("vagrant-proxyconf")
+    config.proxy.http     = "http://mdbpx.mdb.com.br:8090"
+    config.proxy.https    = "http://mdbpx.mdb.com.br:8090"
+    config.proxy.no_proxy = "localhost,127.0.0.1,.example.com"
+  end
+  # ... other stuff
+end
+```
+
 * Download [Oracle Database 11g Express Edition] for Linux x64. Place the file
   `oracle-xe-11.2.0-1.0.x86_64.rpm.zip` in the directory `modules/oracle/files` of this
   project. (Alternatively, you could keep the zip file in some other location and make a hard link
