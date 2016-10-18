@@ -21,6 +21,7 @@ Vagrant.configure("2") do |config|
   # providers for Vagrant. These expose provider-specific options.
   config.vm.provider :virtualbox do |vb|
     # Use VBoxManage to customize the VM
+    vb.cpus = 1
     vb.customize ["modifyvm", :id,
                   "--name", "oracle",
                   # Oracle claims to need 512MB of memory available minimum
