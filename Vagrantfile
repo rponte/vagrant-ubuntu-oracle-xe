@@ -22,6 +22,8 @@ Vagrant.configure("2") do |config|
   config.vm.provider :virtualbox do |vb|
     # Use VBoxManage to customize the VM
     vb.cpus = 1
+    # Keeps time in sync even when Windows sleeps
+    vb.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 1000 ]
     vb.customize ["modifyvm", :id,
                   "--name", "oracle",
                   # Oracle claims to need 512MB of memory available minimum
