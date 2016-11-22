@@ -27,7 +27,7 @@ contributions.
 
 * Check out this project:
 
-        git clone https://github.com/hilverd/vagrant-ubuntu-oracle-xe.git
+        git clone https://github.com/rponte/vagrant-ubuntu-oracle-xe.git
 
 * Install [vbguest]:
 
