@@ -22,14 +22,18 @@ Vagrant.configure("2") do |config|
   config.vm.provider :virtualbox do |vb|
     # Use VBoxManage to customize the VM
     vb.cpus = 1
+	vb.default_nic_type = "Am79C973"
     # Keeps time in sync even when Windows sleeps
     vb.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 1000 ]
     vb.customize ["modifyvm", :id,
                   "--name", "oracle",
                   # Oracle claims to need 512MB of memory available minimum
                   "--memory", "1024",
-                  # Enable DNS behind NAT
-                  "--natdnshostresolver1", "on"]
+                  # Enables DNS behind NAT
+                  "--natdnshostresolver1", "on",
+				  "--natdnsproxy1"       , "on",
+				  # Enables supporting for multiple cpus
+				  "--ioapic"             , "on" ]
   end
 
   # This is just an example, adjust as needed
