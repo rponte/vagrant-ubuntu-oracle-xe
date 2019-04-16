@@ -44,7 +44,7 @@ SCRIPT
   config.vm.provision :shell, :inline => $locale_and_charset_conf
 
   config.vbguest.auto_update = true
-  config.proxy.enabled = true
+#  config.proxy.enabled = true
 
   $install_puppet_modules = <<SCRIPT
   if [ -f /home/vagrant/vagrant-ubuntu-oracle-xe/oracle-jdbc/ojdbc6.jar ]; then
