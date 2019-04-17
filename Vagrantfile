@@ -2,13 +2,8 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  # All Vagrant configuration is done here. The most common configuration
-  # options are documented and commented below. For a complete reference,
-  # please see the online documentation at vagrantup.com.
 
   config.vm.box = "ubuntu/precise64"
-  #config.vm.box = "precise64"
-  #config.vm.box_url = "http://files.vagrantup.com/precise64.box"
   config.vm.hostname = "oracle"
 
   # share this project under /home/vagrant/vagrant-ubuntu-oracle-xe
@@ -17,49 +12,31 @@ Vagrant.configure("2") do |config|
   # Forward Oracle port
   config.vm.network :forwarded_port, guest: 1521, host: 1521
 
-  # Provider-specific configuration so you can fine-tune various backing
-  # providers for Vagrant. These expose provider-specific options.
+  # VirtualBox configuration
   config.vm.provider :virtualbox do |vb|
-    # Use VBoxManage to customize the VM
-    vb.cpus = 1
-	vb.default_nic_type = "Am79C973"
+    vb.name   = "oracle"
+    vb.gui    = false
+    vb.cpus   = 1    # Oracle 11G XE uses no more than 1 core
+    vb.memory = 1024 # Oracle claims to need 512MB of memory available minimum
+    vb.default_nic_type = "Am79C973" # Better virtual network hardware
+	
     # Keeps time in sync even when Windows sleeps
-    vb.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 1000 ]
-    vb.customize ["modifyvm", :id,
-                  "--name", "oracle",
-                  # Oracle claims to need 512MB of memory available minimum
-                  "--memory", "1024",
-                  # Enables DNS behind NAT
-                  "--natdnshostresolver1", "on",
-				  "--natdnsproxy1"       , "on",
-				  # Enables supporting for multiple cpus
-				  "--ioapic"             , "on" ]
+    vb.customize ["guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 1000]
+	
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on" ] # Enables DNS behind NAT
+    vb.customize ["modifyvm", :id, "--natdnsproxy1"       , "on" ] # Enables DNS behind NAT
+    vb.customize ["modifyvm", :id, "--ioapic"             , "on" ] # Enables supporting for multiple cpus
+    vb.customize ["modifyvm", :id, "--paravirtprovider"   , "kvm"] # Enables Paravirtualization (VirtualBox v5.x or later)
   end
+  
+  # Plugins configurations
+  config.vbguest.auto_update = true # Enables automatic Guest Additions upgrade
+#  config.proxy.enabled = true # Enables proxy configuration
 
-  # This is just an example, adjust as needed
-  config.vm.provision :shell, :inline => "echo \"America/Fortaleza\" | sudo tee /etc/timezone && dpkg-reconfigure --frontend noninteractive tzdata"
+  # Runs pre-install script
+  config.vm.provision :shell, :path => "oracle-xe-preinstall.sh", :privileged => false
 
-  # configures locale as pt_BR and encoding as ISO-8859-1 (by @rponte)
-  $locale_and_charset_conf = <<SCRIPT
-    sudo locale-gen pt_BR
-    sudo locale-gen pt_BR.ISO-8859-1
-    sudo update-locale LANG=pt_BR.ISO-8859-1 LC_MESSAGES=POSIX
-SCRIPT
-  config.vm.provision :shell, :inline => $locale_and_charset_conf
-
-  config.vbguest.auto_update = true
-#  config.proxy.enabled = true
-
-  $install_puppet_modules = <<SCRIPT
-  if [ -f /home/vagrant/vagrant-ubuntu-oracle-xe/oracle-jdbc/ojdbc6.jar ]; then
-    mkdir -p /etc/puppet/modules
-    puppet module list | grep -q puppetlabs-java || puppet module install puppetlabs-java
-    puppet module list | grep -q maestrodev-maven || puppet module install maestrodev-maven
-  fi
-SCRIPT
-
-  config.vm.provision "shell", inline: $install_puppet_modules
-
+  # Runs installation script
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "manifests"
     puppet.module_path = "modules"
@@ -67,6 +44,6 @@ SCRIPT
     puppet.options = "--verbose --trace"
   end
 
-  # Run the Maven goals for data-with-flyway
-  config.vm.provision "shell", path: "flyway.sh"
+  # Runs post-install script
+  config.vm.provision :shell, :path => "oracle-xe-postinstall.sh", :privileged => false
 end
