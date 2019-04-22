@@ -55,14 +55,6 @@ end
   project. (Alternatively, you could keep the zip file in some other location and make a hard link
   to it from `modules/oracle/files`.)
 
-* *Optional:* To get [Flyway](http://flywaydb.org/) integration, download `ojdbc6.jar` for JDK 1.6 from
-    [Oracle Database 11g Release 2 11.2.0.4 JDBC Drivers](http://www.oracle.com/technetwork/database/enterprise-edition/jdbc-112010-090769.html),
-    and place it in the directory `oracle-jdbc` of this project.
-
-    Migrations are in `data-with-flyway/src/main/resources/database/migrations`.
-    See `data-with-flyway/README.md` for more instructions.
-    Many thanks to [Nicholas Blair](https://github.com/nblair) for contributing this feature.
-
 * Run `vagrant up` from the base directory of this project. The first time this will take a while -- up to 30 minutes on
   my machine. Please note that building the VM involves downloading an Ubuntu 12.04
   [base box](http://docs.vagrantup.com/v2/boxes.html) which is 323MB in size.
